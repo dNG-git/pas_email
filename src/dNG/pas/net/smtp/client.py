@@ -24,7 +24,7 @@ http://www.direct-netware.de/redirect.py?licenses;mpl2
 NOTE_END //n"""
 
 from copy import copy
-from smtplib import LMTP, SMTP, SMTP_SSL
+from smtplib import LMTP, SMTP, SMTP_SSL, SMTPServerDisconnected
 
 from dNG.data.rfc.email.message import Message
 from dNG.pas.data.settings import Settings
@@ -56,15 +56,15 @@ Constructor __init__(Client)
 
 		self.message = None
 		"""
-e-Mail message instance
+e-mail message instance
 		"""
 		self.timeout = 0
 		"""
 Request timeout value
 		"""
 
-		Settings.read_file("{0}/settings/pas_smtp_client.json".format(Settings.instance['path_data']), True)
-		self.timeout = int(Settings.get("pas_smtp_client_timeout", 5))
+		Settings.read_file("{0}/settings/pas_smtp_client.json".format(Settings.get("path_data")), True)
+		self.timeout = int(Settings.get("pas_smtp_client_timeout", 30))
 	#
 
 	def _get_lmtp_connection(self):
@@ -76,16 +76,15 @@ Returns an established LMTP connection.
 :since:  v0.1.00
 		"""
 
-		# pylint: disable: star-args
+		# pylint: disable=star-args
 
 		smtp_options = { }
 		if (Settings.is_defined("pas_smtp_client_sender_hostname")): smtp_options['local_hostname'] = Settings.get("pas_smtp_client_sender_hostname")
 
-		_return = (
-			LMTP(Settings.get("pas_smtp_client_lmtp_host"), int(Settings.get("pas_smtp_client_lmtp_port", 24)))
-			if (Settings.is_defined("pas_smtp_client_lmtp_host")) else
-			LMTP(Settings.get("pas_smtp_client_lmtp_pathname"))
-		)
+		_return = (LMTP(Settings.get("pas_smtp_client_lmtp_host"), int(Settings.get("pas_smtp_client_lmtp_port", 24)))
+		           if (Settings.is_defined("pas_smtp_client_lmtp_host")) else
+		           LMTP(Settings.get("pas_smtp_client_lmtp_pathname"))
+		          )
 
 		return _return
 	#
@@ -99,7 +98,7 @@ Returns an established SMTP connection.
 :since:  v0.1.00
 		"""
 
-		# pylint: disable: star-args
+		# pylint: disable=star-args
 
 		smtp_host = Settings.get("pas_smtp_client_host", "localhost")
 		smtp_port = int(Settings.get("pas_smtp_client_port", 25))
@@ -125,11 +124,10 @@ Returns an established SMTP connection.
 
 		if (Settings.is_defined("pas_smtp_client_sender_hostname")): smtp_options['local_hostname'] = Settings.get("pas_smtp_client_sender_hostname")
 
-		_return = (
-			SMTP_SSL(smtp_host, smtp_port, timeout = self.timeout, **smtp_options)
-			if ("keyfile" in smtp_options) else
-			SMTP(smtp_host, smtp_port, timeout = self.timeout, **smtp_options)
-		)
+		_return = (SMTP_SSL(smtp_host, smtp_port, timeout = self.timeout, **smtp_options)
+		           if ("keyfile" in smtp_options) else
+		           SMTP(smtp_host, smtp_port, timeout = self.timeout, **smtp_options)
+		          )
 
 		if (is_tls_connection): _return.starttls(ssl_key_file_pathname, ssl_cert_file_pathname)
 
@@ -145,16 +143,16 @@ Sends a message.
 		"""
 
 		if (self.message == None): raise IOException("No message defined to be send")
-		if (not self.message.is_recipient_defined()): raise ValueException("No recipients defined for e-Mail")
-		if (not self.message.is_subject_set()): raise IOException("No subject defined for e-Mail")
+		if (not self.message.is_recipient_defined()): raise ValueException("No recipients defined for e-mail")
+		if (not self.message.is_subject_set()): raise IOException("No subject defined for e-mail")
 
 		bcc_list = self.message.get_bcc()
 		cc_list = self.message.get_cc()
 		to_list = self.message.get_to()
 
 		rcpt_list = to_list
-		if (len(bcc_list) > 0): rcpt_list = Client._unique_list_add(rcpt_list, bcc_list)
-		if (len(cc_list) > 0): rcpt_list = Client._unique_list_add(rcpt_list, cc_list)
+		if (len(bcc_list) > 0): rcpt_list = Client._filter_unique_list(rcpt_list, bcc_list)
+		if (len(cc_list) > 0): rcpt_list = Client._filter_unique_list(rcpt_list, cc_list)
 
 		is_auth_possible = False
 		smtp_user = None
@@ -171,11 +169,12 @@ Sends a message.
 
 		try:
 		#
-			smtp_connection = (
-				self._get_lmtp_connection()
-				if (Settings.is_defined("pas_smtp_client_lmtp_host") or Settings.is_defined("pas_smtp_client_lmtp_pathname")) else
-				self._get_smtp_connection()
-			)
+			smtp_connection = (self._get_lmtp_connection()
+			                   if (Settings.is_defined("pas_smtp_client_lmtp_host")
+			                       or Settings.is_defined("pas_smtp_client_lmtp_pathname")
+			                      )
+			                   else self._get_smtp_connection()
+			                  )
 
 			if (is_auth_possible): smtp_connection.login(smtp_user, smtp_password)
 
@@ -188,14 +187,18 @@ Sends a message.
 		#
 		finally:
 		#
-			if (smtp_connection != None): smtp_connection.quit()
+			try:
+			#
+				if (smtp_connection != None): smtp_connection.quit()
+			#
+			except SMTPServerDisconnected: pass
 		#
 	#
 
 	def set_message(self, message, override = False):
 	#
 		"""
-Sets the message body of the e-Mail.
+Sets the message body of the e-mail.
 
 :param message: Message instance
 
@@ -210,7 +213,7 @@ Sets the message body of the e-Mail.
 	#
 
 	@staticmethod
-	def _unique_list_add(source_list, additional_list):
+	def _filter_unique_list(source_list, additional_list):
 	#
 		"""
 Returns a list where each entry is unique.
