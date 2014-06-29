@@ -2,10 +2,6 @@
 ##j## BOF
 
 """
-dNG.pas.net.smtp.Client
-"""
-"""n// NOTE
-----------------------------------------------------------------------------
 direct PAS
 Python Application Services
 ----------------------------------------------------------------------------
@@ -20,14 +16,14 @@ http://www.direct-netware.de/redirect.py?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(pasEMailVersion)#
 #echo(__FILEPATH__)#
-----------------------------------------------------------------------------
-NOTE_END //n"""
+"""
 
 from copy import copy
 from smtplib import LMTP, SMTP, SMTP_SSL, SMTPServerDisconnected
 
 from dNG.data.rfc.email.message import Message
 from dNG.pas.data.settings import Settings
+from dNG.pas.module.named_loader import NamedLoader
 from dNG.pas.runtime.io_exception import IOException
 from dNG.pas.runtime.type_exception import TypeException
 from dNG.pas.runtime.value_exception import ValueException
@@ -54,6 +50,11 @@ Constructor __init__(Client)
 :since: v0.1.00
 		"""
 
+		self.log_handler = NamedLoader.get_singleton("dNG.pas.data.logging.LogHandler", False)
+		"""
+The LogHandler is called whenever debug messages should be logged or errors
+happened.
+		"""
 		self.message = None
 		"""
 e-mail message instance
@@ -63,7 +64,9 @@ e-mail message instance
 Request timeout value
 		"""
 
+		Settings.read_file("{0}/settings/pas_email.json".format(Settings.get("path_data")), True)
 		Settings.read_file("{0}/settings/pas_smtp_client.json".format(Settings.get("path_data")), True)
+
 		self.timeout = int(Settings.get("pas_smtp_client_timeout", 30))
 	#
 
@@ -142,6 +145,8 @@ Sends a message.
 :since: v0.1.00
 		"""
 
+		if (self.log_handler != None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
+
 		if (self.message == None): raise IOException("No message defined to be send")
 		if (not self.message.is_recipient_defined()): raise ValueException("No recipients defined for e-mail")
 		if (not self.message.is_subject_set()): raise IOException("No subject defined for e-mail")
@@ -178,7 +183,14 @@ Sends a message.
 
 			if (is_auth_possible): smtp_connection.login(smtp_user, smtp_password)
 
-			if (not self.message.is_from_set()): self.message.set_from(Settings.get("pas_smtp_client_sender_public"))
+			if (not self.message.is_from_set()):
+			#
+				self.message.set_from(Settings.get("pas_email_sender_public")
+				                      if (Settings.is_defined("pas_email_sender_public")) else
+				                      Settings.get("pas_email_address_public")
+				                     )
+			#
+
 			from_address = self.message.get_from()
 
 			smtp_connection.sendmail(from_address, rcpt_list, self.message.as_string())

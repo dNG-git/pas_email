@@ -2,10 +2,6 @@
 ##j## BOF
 
 """
-dNG.pas.data.text.EMailRenderer
-"""
-"""n// NOTE
-----------------------------------------------------------------------------
 direct PAS
 Python Application Services
 ----------------------------------------------------------------------------
@@ -20,8 +16,7 @@ http://www.direct-netware.de/redirect.py?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(pasEMailVersion)#
 #echo(__FILEPATH__)#
-----------------------------------------------------------------------------
-NOTE_END //n"""
+"""
 
 from dNG.pas.data.settings import Settings
 from dNG.pas.data.text.l10n import L10n
@@ -64,7 +59,7 @@ On demand of the user or an action the user initialized
 	def __init__(self, l10n = None):
 	#
 		"""
-Constructor __init__(RegistrationEMailRenderer)
+Constructor __init__(EMailRenderer)
 
 :param l10n: L10n instance
 
