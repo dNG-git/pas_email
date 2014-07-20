@@ -1,7 +1,7 @@
-_extras
 __py*
 .*
 *.pyc
-make*.py*
 nbproject
-pas_email.*
+/_extras
+/make*.py*
+/pas_email.*

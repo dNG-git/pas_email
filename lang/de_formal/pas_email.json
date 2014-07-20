@@ -1,0 +1,9 @@
+{
+ "pas_email_reason_for_validation": "Sie haben eine Aufgabe ausgewählt, zu deren Ausführung der Link in dieser E-Mail-Nachricht aufgerufen werden muss.",
+ "pas_email_reason_from_administration": "Diese E-Mail wurde dir durch die Administration zugesandt.",
+ "pas_email_reason_from_separate_user": "Diese E-Mail wurde durch einen anderen Benutzer an Sie geschickt. Setzen Sie sich bei Problemen mit der auf Gültigkeit überprüften, untenstehenden Absenderadresse in Verbindung.",
+ "pas_email_reason_from_system": "Diese E-Mail wurde für Sie automatisch basierend auf den Allgemeinen Nutzungsbedingungen und Ihrer Zustimmung erzeugt.",
+ "pas_email_reason_on_demand": "Diese E-Mail wurde von Ihnen direkt erwünscht oder durch Nutzung einer Funktion automatisch versandt.",
+
+ "pas_email_url_notice": "Beachten Sie bitte, dass eventuell einige Programme die obenstehende URL über mehrere Zeilen hinweg anzeigen. Damit die Aufgabe erfolgreich ausgeführt werden kann, muss in diesem Falle der Link aus den einzelnen Zeilen zusammengesetzt und danach aufgerufen werden."
+}
