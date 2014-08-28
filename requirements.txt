@@ -1,0 +1,2 @@
+-e git+http://git.direct-netware.de/pas/core/#egg=pas_core
+-e git+http://git.direct-netware.de/py/rfc_email/#egg=pyRfcEmail
