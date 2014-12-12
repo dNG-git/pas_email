@@ -86,7 +86,7 @@ Returns an established LMTP connection.
 
 		_return = (LMTP(Settings.get("pas_smtp_client_lmtp_host"), int(Settings.get("pas_smtp_client_lmtp_port", 24)))
 		           if (Settings.is_defined("pas_smtp_client_lmtp_host")) else
-		           LMTP(Settings.get("pas_smtp_client_lmtp_pathname"))
+		           LMTP(Settings.get("pas_smtp_client_lmtp_path_name"))
 		          )
 
 		return _return
@@ -108,21 +108,21 @@ Returns an established SMTP connection.
 		smtp_options = { }
 
 		is_tls_connection = Settings.get("pas_smtp_client_tls", False)
-		ssl_cert_file_pathname = ""
-		ssl_key_file_pathname = ""
+		ssl_cert_file_path_name = ""
+		ssl_key_file_path_name = ""
 
 		if (Settings.is_defined("pas_smtp_client_ssl_cert_file") and Settings.is_defined("pas_smtp_client_ssl_key_file")):
 		#
-			ssl_cert_file_pathname = Settings.get("pas_smtp_client_ssl_cert_file")
-			ssl_key_file_pathname = Settings.get("pas_smtp_client_ssl_key_file")
+			ssl_cert_file_path_name = Settings.get("pas_smtp_client_ssl_cert_file")
+			ssl_key_file_path_name = Settings.get("pas_smtp_client_ssl_key_file")
 
-			if (ssl_cert_file_pathname + ssl_key_file_pathname == ""): raise IOException("TLS requested for incomplete configuration")
+			if (ssl_cert_file_path_name + ssl_key_file_path_name == ""): raise IOException("TLS requested for incomplete configuration")
 		#
 
-		if (ssl_cert_file_pathname + ssl_key_file_pathname != "" and (not is_tls_connection)):
+		if (ssl_cert_file_path_name + ssl_key_file_path_name != "" and (not is_tls_connection)):
 		#
-			smtp_options['certfile'] = ssl_cert_file_pathname
-			smtp_options['keyfile'] = ssl_key_file_pathname
+			smtp_options['certfile'] = ssl_cert_file_path_name
+			smtp_options['keyfile'] = ssl_key_file_path_name
 		#
 
 		if (Settings.is_defined("pas_smtp_client_sender_hostname")): smtp_options['local_hostname'] = Settings.get("pas_smtp_client_sender_hostname")
@@ -132,7 +132,7 @@ Returns an established SMTP connection.
 		           SMTP(smtp_host, smtp_port, timeout = self.timeout, **smtp_options)
 		          )
 
-		if (is_tls_connection): _return.starttls(ssl_key_file_pathname, ssl_cert_file_pathname)
+		if (is_tls_connection): _return.starttls(ssl_key_file_path_name, ssl_cert_file_path_name)
 
 		return _return
 	#
@@ -176,7 +176,7 @@ Sends a message.
 		#
 			smtp_connection = (self._get_lmtp_connection()
 			                   if (Settings.is_defined("pas_smtp_client_lmtp_host")
-			                       or Settings.is_defined("pas_smtp_client_lmtp_pathname")
+			                       or Settings.is_defined("pas_smtp_client_lmtp_path_name")
 			                      )
 			                   else self._get_smtp_connection()
 			                  )
