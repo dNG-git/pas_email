@@ -73,7 +73,7 @@ L10n instance
 
 		Settings.read_file("{0}/settings/pas_email.json".format(Settings.get("path_data")))
 
-		if (self.l10n == None): self.l10n = L10n.get_instance()
+		if (self.l10n is None): self.l10n = L10n.get_instance()
 		lang = self.l10n.get_lang()
 
 		L10n.init("core", lang)
@@ -100,7 +100,7 @@ Render header, body and footer suitable for e-mail delivery.
 		elif (reason == EMailRenderer.REASON_FROM_SEPARATE_USER): _return = self.l10n.get("pas_email_reason_from_separate_user")
 		elif (reason == EMailRenderer.REASON_ON_DEMAND): _return = self.l10n.get("pas_email_reason_on_demand")
 
-		if (_return == None): _return = self.l10n.get("pas_email_reason_from_system")
+		if (_return is None): _return = self.l10n.get("pas_email_reason_from_system")
 		return _return.strip()
 	#
 
@@ -120,7 +120,7 @@ Render header, body and footer suitable for e-mail delivery.
 		lang = self.l10n.get_lang()
 
 		header = Settings.get_lang_associated("pas_email_header", lang)
-		header = (email_reason if (header == None) else "{0}\n\n{1}".format(header, email_reason))
+		header = (email_reason if (header is None) else "{0}\n\n{1}".format(header, email_reason))
 
 		footer = Settings.get_lang_associated("pas_email_footer", lang, "(c) All rights reserved")
 

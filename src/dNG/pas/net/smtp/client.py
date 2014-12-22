@@ -145,9 +145,9 @@ Sends a message.
 :since: v0.1.00
 		"""
 
-		if (self.log_handler != None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
+		if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
 
-		if (self.message == None): raise IOException("No message defined to be send")
+		if (self.message is None): raise IOException("No message defined to be send")
 		if (not self.message.is_recipient_defined()): raise ValueException("No recipients defined for e-mail")
 		if (not self.message.is_subject_set()): raise IOException("No subject defined for e-mail")
 
@@ -201,7 +201,7 @@ Sends a message.
 		#
 			try:
 			#
-				if (smtp_connection != None): smtp_connection.quit()
+				if (smtp_connection is not None): smtp_connection.quit()
 			#
 			except SMTPServerDisconnected: pass
 		#
@@ -217,8 +217,10 @@ Sets the message body of the e-mail.
 :since: v0.1.00
 		"""
 
+		if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.set_message()- (#echo(__LINE__)#)", self, context = "pas_email")
+
 		if (not isinstance(message, Message)): raise TypeException("Body not given in a supported type")
-		if ((not override) and self.message != None): raise ValueException("Body is already set")
+		if ((not override) and self.message is not None): raise ValueException("Body is already set")
 
 		# Copy message as we manipulate it in "send()"
 		self.message = copy(message)
