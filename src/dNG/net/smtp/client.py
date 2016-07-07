@@ -22,22 +22,22 @@ from copy import copy
 from smtplib import LMTP, SMTP, SMTP_SSL, SMTPServerDisconnected
 
 from dNG.data.rfc.email.message import Message
-from dNG.pas.data.settings import Settings
-from dNG.pas.module.named_loader import NamedLoader
-from dNG.pas.runtime.io_exception import IOException
-from dNG.pas.runtime.type_exception import TypeException
-from dNG.pas.runtime.value_exception import ValueException
+from dNG.data.settings import Settings
+from dNG.module.named_loader import NamedLoader
+from dNG.runtime.io_exception import IOException
+from dNG.runtime.type_exception import TypeException
+from dNG.runtime.value_exception import ValueException
 
 class Client(object):
 #
 	"""
 The SMTP client is used to send e-mails with the configured server.
 
-:author:     direct Netware Group
+:author:     direct Netware Group et al.
 :copyright:  (C) direct Netware Group - All rights reserved
 :package:    pas
 :subpackage: email
-:since:      v0.1.00
+:since:      v0.2.00
 :license:    https://www.direct-netware.de/redirect?licenses;mpl2
              Mozilla Public License, v. 2.0
 	"""
@@ -47,10 +47,10 @@ The SMTP client is used to send e-mails with the configured server.
 		"""
 Constructor __init__(Client)
 
-:since: v0.1.00
+:since: v0.2.00
 		"""
 
-		self.log_handler = NamedLoader.get_singleton("dNG.pas.data.logging.LogHandler", False)
+		self.log_handler = NamedLoader.get_singleton("dNG.data.logging.LogHandler", False)
 		"""
 The LogHandler is called whenever debug messages should be logged or errors
 happened.
@@ -76,7 +76,7 @@ Request timeout value
 Returns an established LMTP connection.
 
 :return: (object) LMTP connection
-:since:  v0.1.00
+:since:  v0.2.00
 		"""
 
 		# pylint: disable=star-args
@@ -98,7 +98,7 @@ Returns an established LMTP connection.
 Returns an established SMTP connection.
 
 :return: (object) SMTP connection
-:since:  v0.1.00
+:since:  v0.2.00
 		"""
 
 		# pylint: disable=star-args
@@ -142,7 +142,7 @@ Returns an established SMTP connection.
 		"""
 Sends a message.
 
-:since: v0.1.00
+:since: v0.2.00
 		"""
 
 		if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
@@ -214,7 +214,7 @@ Sets the message body of the e-mail.
 
 :param message: Message instance
 
-:since: v0.1.00
+:since: v0.2.00
 		"""
 
 		if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.set_message()- (#echo(__LINE__)#)", self, context = "pas_email")
@@ -233,7 +233,7 @@ Sets the message body of the e-mail.
 Returns a list where each entry is unique.
 
 :return: (list) Unique list of entries given
-:since:  v0.1.01
+:since:  v0.2.00
 		"""
 
 		_return = source_list
