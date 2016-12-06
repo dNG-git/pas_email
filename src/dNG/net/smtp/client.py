@@ -17,6 +17,8 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 #echo(__FILEPATH__)#
 """
 
+# pylint: disable=import-error, no-name-in-module
+
 from copy import copy
 from smtplib import LMTP, SMTP, SMTP_SSL, SMTPServerDisconnected
 
@@ -75,8 +77,6 @@ Returns an established LMTP connection.
 :since:  v0.2.00
         """
 
-        # pylint: disable=star-args
-
         smtp_options = { }
         if (Settings.is_defined("pas_smtp_client_sender_hostname")): smtp_options['local_hostname'] = Settings.get("pas_smtp_client_sender_hostname")
 
@@ -95,8 +95,6 @@ Returns an established SMTP connection.
 :return: (object) SMTP connection
 :since:  v0.2.00
         """
-
-        # pylint: disable=star-args
 
         smtp_host = Settings.get("pas_smtp_client_host", "localhost")
         smtp_port = int(Settings.get("pas_smtp_client_port", 25))
