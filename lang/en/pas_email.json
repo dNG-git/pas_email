@@ -1,9 +1,9 @@
 {
- "pas_email_reason_for_validation": "You have selected a task for processing that needs you to open the link in this e-Mail message.",
- "pas_email_reason_from_administration": "This e-Mail has been sent to you by the administration.",
- "pas_email_reason_from_separate_user": "This e-Mail has been sent to you by a third party. Please use the following, verified sender information for contacting.",
- "pas_email_reason_from_system": "This e-Mail has been generated automatically based on our Terms Of Service and your approval.",
- "pas_email_reason_on_demand": "This e-Mail has been directly requested by you or it has been generated automatically while using a function.",
+    "pas_email_reason_for_validation": "You have selected a task for processing that needs you to open the link in this e-Mail message.",
+    "pas_email_reason_from_administration": "This e-Mail has been sent to you by the administration.",
+    "pas_email_reason_from_separate_user": "This e-Mail has been sent to you by a third party. Please use the following, verified sender information for contacting.",
+    "pas_email_reason_from_system": "This e-Mail has been generated automatically based on our Terms Of Service and your approval.",
+    "pas_email_reason_on_demand": "This e-Mail has been directly requested by you or it has been generated automatically while using a function.",
 
- "pas_email_url_notice": "Please note that maybe some programs show the URL written above using more than one line. To complete the task successfully, the link should be combined line-by-line and accessed afterwards."
+    "pas_email_url_notice": "Please note that maybe some programs show the URL written above using more than one line. To complete the task successfully, the link should be combined line-by-line and accessed afterwards."
 }
