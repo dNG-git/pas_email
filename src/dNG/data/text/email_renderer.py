@@ -30,7 +30,7 @@ The "EMailRenderer" is responsible of creating a formatted text body.
 :copyright:  direct Netware Group - All rights reserved
 :package:    pas
 :subpackage: email
-:since:      v0.2.00
+:since:      v1.0.0
 :license:    https://www.direct-netware.de/redirect?licenses;mpl2
              Mozilla Public License, v. 2.0
     """
@@ -62,7 +62,7 @@ Constructor __init__(EMailRenderer)
 
 :param l10n: L10n instance
 
-:since: v0.2.00
+:since: v1.0.0
         """
 
         self.l10n = l10n
@@ -73,7 +73,7 @@ L10n instance
         Settings.read_file("{0}/settings/pas_email.json".format(Settings.get("path_data")))
 
         if (self.l10n is None): self.l10n = L10n.get_instance()
-        lang = self.l10n.get_lang()
+        lang = self.l10n.lang
 
         L10n.init("core", lang)
         L10n.init("pas_core", lang)
@@ -88,7 +88,7 @@ Render header, body and footer suitable for e-mail delivery.
 :param reason: Reason for automated delivery
 
 :return: (str) Rendered e-mail body
-:since:  v0.2.00
+:since:  v1.0.0
         """
 
         _return = None
@@ -110,11 +110,11 @@ Render header, body and footer suitable for e-mail delivery.
 :param reason: Reason for automated delivery
 
 :return: (str) Rendered e-mail body
-:since:  v0.2.00
+:since:  v1.0.0
         """
 
         email_reason = self._render_reason(reason)
-        lang = self.l10n.get_lang()
+        lang = self.l10n.lang
 
         header = Settings.get_lang_associated("pas_email_header", lang)
         header = (email_reason if (header is None) else "{0}\n\n{1}".format(header, email_reason))
