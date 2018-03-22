@@ -24,8 +24,8 @@ from smtplib import LMTP, SMTP, SMTP_SSL, SMTPServerDisconnected
 
 from dNG.data.rfc.email.message import Message
 from dNG.data.settings import Settings
-from dNG.module.named_loader import NamedLoader
 from dNG.runtime.io_exception import IOException
+from dNG.runtime.named_loader import NamedLoader
 from dNG.runtime.type_exception import TypeException
 from dNG.runtime.value_exception import ValueException
 
@@ -37,7 +37,7 @@ The SMTP client is used to send e-mails with the configured server.
 :copyright:  (C) direct Netware Group - All rights reserved
 :package:    pas
 :subpackage: email
-:since:      v0.2.00
+:since:      v1.0.0
 :license:    https://www.direct-netware.de/redirect?licenses;mpl2
              Mozilla Public License, v. 2.0
     """
@@ -46,15 +46,15 @@ The SMTP client is used to send e-mails with the configured server.
         """
 Constructor __init__(Client)
 
-:since: v0.2.00
+:since: v1.0.0
         """
 
-        self.log_handler = NamedLoader.get_singleton("dNG.data.logging.LogHandler", False)
+        self._log_handler = NamedLoader.get_singleton("dNG.data.logging.LogHandler", False)
         """
 The LogHandler is called whenever debug messages should be logged or errors
 happened.
         """
-        self.message = None
+        self._message = None
         """
 e-mail message instance
         """
@@ -69,12 +69,37 @@ Request timeout value
         self.timeout = int(Settings.get("pas_smtp_client_timeout", 30))
     #
 
+    @property
+    def message(self):
+        """
+Returns the e-mail message instance set.
+
+:return: (object) e-mail message instance
+:since:  v1.0.0
+        """
+
+        return self._message
+    #
+
+    @message.setter
+    def message(self, message):
+        """
+Sets the e-mail message instance of this instance.
+
+:param message: e-mail message instance
+
+:since: v1.0.0
+        """
+
+        self.set_message(message, True)
+    #
+
     def _get_lmtp_connection(self):
         """
 Returns an established LMTP connection.
 
 :return: (object) LMTP connection
-:since:  v0.2.00
+:since:  v1.0.0
         """
 
         smtp_options = { }
@@ -93,7 +118,7 @@ Returns an established LMTP connection.
 Returns an established SMTP connection.
 
 :return: (object) SMTP connection
-:since:  v0.2.00
+:since:  v1.0.0
         """
 
         smtp_host = Settings.get("pas_smtp_client_host", "localhost")
@@ -132,18 +157,18 @@ Returns an established SMTP connection.
         """
 Sends a message.
 
-:since: v0.2.00
+:since: v1.0.0
         """
 
-        if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
+        if (self._log_handler is not None): self._log_handler.debug("#echo(__FILEPATH__)# -{0!r}.send()- (#echo(__LINE__)#)", self, context = "pas_email")
 
         if (self.message is None): raise IOException("No message defined to be send")
-        if (not self.message.is_recipient_defined()): raise ValueException("No recipients defined for e-mail")
-        if (not self.message.is_subject_set()): raise IOException("No subject defined for e-mail")
+        if (not self.message.is_recipient_set): raise ValueException("No recipients defined for e-mail")
+        if (not self.message.is_subject_set): raise IOException("No subject defined for e-mail")
 
-        bcc_list = self.message.get_bcc()
-        cc_list = self.message.get_cc()
-        to_list = self.message.get_to()
+        bcc_list = self.message.bcc
+        cc_list = self.message.cc
+        to_list = self.message.to
 
         rcpt_list = to_list
         if (len(bcc_list) > 0): rcpt_list = Client._filter_unique_list(rcpt_list, bcc_list)
@@ -171,16 +196,16 @@ Sends a message.
 
             if (is_auth_possible): smtp_connection.login(smtp_user, smtp_password)
 
-            if (not self.message.is_from_set()):
-                self.message.set_from(Settings.get("pas_email_sender_public")
-                                      if (Settings.is_defined("pas_email_sender_public")) else
-                                      Settings.get("pas_email_address_public")
-                                     )
+            if (not self.message.is_sender_set):
+                self.message.sender = (Settings.get("pas_email_sender_public")
+                                       if (Settings.is_defined("pas_email_sender_public")) else
+                                       Settings.get("pas_email_address_public")
+                                      )
             #
 
-            from_address = self.message.get_from()
+            sender = self.message.sender
 
-            smtp_connection.sendmail(from_address, rcpt_list, self.message.as_string())
+            smtp_connection.sendmail(sender, rcpt_list, self.message.as_string())
 
             self.message = None
         finally:
@@ -190,19 +215,20 @@ Sends a message.
         #
     #
 
-    def set_message(self, message, override = False):
+    def set_message(self, message, overwrite = False):
         """
 Sets the message body of the e-mail.
 
 :param message: Message instance
+:param overwrite: True to overwrite the current (non-empty) cache
 
-:since: v0.2.00
+:since: v1.0.0
         """
 
-        if (self.log_handler is not None): self.log_handler.debug("#echo(__FILEPATH__)# -{0!r}.set_message()- (#echo(__LINE__)#)", self, context = "pas_email")
+        if (self._log_handler is not None): self._log_handler.debug("#echo(__FILEPATH__)# -{0!r}.set_message()- (#echo(__LINE__)#)", self, context = "pas_email")
 
         if (not isinstance(message, Message)): raise TypeException("Body not given in a supported type")
-        if ((not override) and self.message is not None): raise ValueException("Body is already set")
+        if ((not overwrite) and self.message is not None): raise ValueException("Body is already set")
 
         # Copy message as we manipulate it in "send()"
         self.message = copy(message)
@@ -214,7 +240,7 @@ Sets the message body of the e-mail.
 Returns a list where each entry is unique.
 
 :return: (list) Unique list of entries given
-:since:  v0.2.00
+:since:  v1.0.0
         """
 
         _return = source_list
